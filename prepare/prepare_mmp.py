@@ -94,5 +94,5 @@ labels = np.array(labels)
 rgba = np.vstack((np.array(rgba), rgba_sc))
 
 
-np.savez_compressed('../data/MMP1.0.npz', map_all=map_all, labels=labels, rgba=rgba)
+np.savez_compressed('../data/mmp_1.0.npz', map_all=map_all, labels=labels, rgba=rgba)
 

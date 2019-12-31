@@ -8,4 +8,8 @@ from
 https://balsa.wustl.edu/78X3
 
 
+# Cole Anticevic network partition and parcellation
+
+The files are from https://github.com/ColeLab/ColeAnticevicNetPartition
+
 
