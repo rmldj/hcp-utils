@@ -1,9 +1,13 @@
 import nibabel as nib
 from nilearn import surface
+from nilearn import plotting
 from sklearn.utils import Bunch
+import matplotlib
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import numpy as np
 import os
-
+from pathlib import Path
 
 # define standard structures (for 3T HCP-like data)
 
@@ -50,7 +54,9 @@ def make_vertex_info(grayl, grayr, num_meshl, num_meshr):
     vertex_info.num_meshr = num_meshr
     return vertex_info
 
-vertex_data = np.load('data/fMRI_vertex_info_32k.npz')
+PKGDATA = Path(__file__).parent / 'data'
+
+vertex_data = np.load(PKGDATA / 'fMRI_vertex_info_32k.npz')
 vertex_info = make_vertex_info(vertex_data['grayl'], vertex_data['grayr'], int(vertex_data['num_meshl']), int(vertex_data['num_meshr']))
 
 def get_HCP_vertex_info(img):
@@ -103,9 +109,9 @@ def combine_meshes(meshL, meshR):
 def load_surfaces(filename_pattern, filename_sulc=None):
     meshes = Bunch()
     for variant in ['white', 'midthickness', 'pial', 'inflated', 'flat']:
+        count = 0
         for hemisphere, hemisphere_name in [('L', 'left'), ('R', 'right')]:
             filename = filename_pattern.format(hemisphere, variant)
-            count = 0
             if os.path.exists(filename):
                 meshes[variant+'_'+hemisphere_name] = surface.load_surf_mesh(filename)
                 count += 1
@@ -115,7 +121,7 @@ def load_surfaces(filename_pattern, filename_sulc=None):
             meshes[variant] = combine_meshes(meshes[variant+'_left'], meshes[variant+'_right'])
 
     if filename_sulc is None:
-        filename_sulc = filename_pattern.format('XX','XX').replace('XX.XX', 'sulc')
+        filename_sulc = filename_pattern.format('XX','XX').replace('XX.XX', 'sulc').replace('surf.gii','dscalar.nii')
     if os.path.exists(filename_sulc):
         sulc_image = nib.load(filename_sulc)
         meshes['sulc'] = - sulc_image.get_fdata()[0]
@@ -126,4 +132,44 @@ def load_surfaces(filename_pattern, filename_sulc=None):
         print('Cannot load file {} with sulcal depth data'.format(filename_sulc))
 
     return meshes
-        
+
+
+def load_hcp_parcellation(variant=None):
+    allowed = ['mmp', 'ca_network', 'ca_parcels', 'yeo7', 'yeo17']
+    if variant not in allowed:
+        print('argument should be one of ' + ','.join(allowed))
+        return
+    
+    if variant=='mmp':
+        parcnpz = np.load(PKGDATA / 'mmp_1.0.npz')
+    if variant=='ca_network':
+        parcnpz = np.load(PKGDATA / 'ca_network_1.1.npz')
+    if variant=='ca_parcels':
+        parcnpz = np.load(PKGDATA / 'ca_parcels_1.1.npz')
+    if variant=='yeo7':
+        parcnpz = np.load(PKGDATA / 'yeo7.npz')
+    if variant=='yeo17':
+        parcnpz = np.load(PKGDATA / 'yeo17.npz')
+    
+    parcellation = Bunch()
+    parcellation.labels = parcnpz['labels']
+    parcellation.map_all = parcnpz['map_all']
+    parcellation.rgba = parcnpz['rgba']
+
+    return parcellation
+
+
+def view_parcellation(meshLR, parcellation):
+    cmap = matplotlib.colors.ListedColormap(parcellation.rgba)
+    return plotting.view_surf(meshLR, cortex_data(parcellation.map_all), symmetric_cmap=False, cmap=cmap)
+
+def parcellation_labels(parcellation):
+    patches = [mpatches.Patch(color=col, label=nm) for nm, col in zip(parcellation.labels, parcellation.rgba)]
+    plt.legend(handles=patches)
+    plt.axis('off')
+    plt.show()
+
+def normalize(X):
+    return (X - np.mean(X,axis=0))/np.std(X,axis=0)
+
+

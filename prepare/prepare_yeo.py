@@ -56,7 +56,7 @@ nmap=list(axis0.named_maps)[0]
 
 rgba = [(1.0,1.0,1.0,1.0)]
 
-for i in [41, 43, 38, 44, 42, 39]:
+for i in [41, 43, 38, 44, 42, 39, 40]:
     lab=nmap.label_table[i]
     rgba.append((lab.red, lab.green, lab.blue, 1.0))
 
