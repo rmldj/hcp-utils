@@ -106,7 +106,10 @@ def combine_meshes(meshL, meshR):
 
 # loads all available surface meshes
 
-def load_surfaces(filename_pattern, filename_sulc=None):
+def load_surfaces(filename_pattern=None, filename_sulc=None):
+    if filename_pattern is None:
+        filename_pattern = PKGDATA / 'S1200.{}.{}_MSMAll.32k_fs_LR.surf.gii'
+        
     meshes = Bunch()
     for variant in ['white', 'midthickness', 'pial', 'inflated', 'flat']:
         count = 0
@@ -134,7 +137,7 @@ def load_surfaces(filename_pattern, filename_sulc=None):
     return meshes
 
 
-def load_hcp_parcellation(variant=None):
+def _load_hcp_parcellation(variant=None):
     allowed = ['mmp', 'ca_network', 'ca_parcels', 'yeo7', 'yeo17']
     if variant not in allowed:
         print('argument should be one of ' + ','.join(allowed))
@@ -158,6 +161,11 @@ def load_hcp_parcellation(variant=None):
 
     return parcellation
 
+mmp = _load_hcp_parcellation('mmp')
+ca_network = _load_hcp_parcellation('ca_network')
+ca_parcels = _load_hcp_parcellation('ca_parcels')
+yeo7 = _load_hcp_parcellation('yeo7')
+yeo17 = _load_hcp_parcellation('yeo17')
 
 def view_parcellation(meshLR, parcellation):
     cmap = matplotlib.colors.ListedColormap(parcellation.rgba)
