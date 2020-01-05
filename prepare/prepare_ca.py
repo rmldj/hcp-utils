@@ -12,11 +12,13 @@ nmap = list(axis0.named_maps)[0]
 
 labels = []
 rgba = []
+keys = []
 
 # left hemisphere
 for i in nmap.label_table:
     roi = nmap.label_table[i]
     labels.append(roi.label[:-4])
+    keys.append(roi.key)
     rgba.append((roi.red, roi.green, roi.blue, roi.alpha))
 
 # replace shorthand labels by full names from ColeAnticevicNetPartition/network_labelfile.txt
@@ -24,8 +26,9 @@ labels = ['', 'Visual1', 'Visual2', 'Somatomotor', 'Cingulo-Opercular', 'Dorsal-
 
 labels = np.array(labels)
 rgba = np.array(rgba)
+keys = np.array(keys)
 
-np.savez_compressed('../data/ca_network_1.1.npz', map_all=rois, labels=labels, rgba=rgba)
+np.savez_compressed('../data/ca_network_1.1.npz', map_all=rois, labels=labels, rgba=rgba, ids=keys)
 
 #print(np.unique(rois))
 
@@ -40,11 +43,13 @@ nmap = list(axis0.named_maps)[0]
 
 labels = []
 rgba = []
+keys = []
 
 # left hemisphere
 for i in nmap.label_table:
     roi = nmap.label_table[i]
-    labels.append(roi.label[:-4])
+    labels.append(roi.label)
+    keys.append(roi.key)
     rgba.append((roi.red, roi.green, roi.blue, roi.alpha))
 
 #print(labels)
@@ -55,4 +60,8 @@ for i in nmap.label_table:
 #print(np.unique(rois))
 #print(len(rois))
 
-np.savez_compressed('../data/ca_parcels_1.1.npz', map_all=rois, labels=labels, rgba=rgba)
+labels = np.array(labels)
+rgba = np.array(rgba)
+keys = np.array(keys)
+
+np.savez_compressed('../data/ca_parcels_1.1.npz', map_all=rois, labels=labels, rgba=rgba, ids=keys)

@@ -1,47 +1,21 @@
 import nibabel as nib
 import numpy as np
 
-mmp = nib.load('../source_data/Q1-Q6_RelatedValidation210.CorticalAreas_dil_Final_Final_Areas_Group_Colors.32k_fs_LR.dlabel.nii')
-
-# rois of grayordinates in the cortex
-
-rois = mmp.dataobj[0].astype(int)
-
-# change ids so that smaller numbers are in the left hemisphere
-# for consistency with Cole-Anticevic parcellation
-
-flip_ordering = np.array([0] + list(range(181, 361)) + list(range(1, 181)))
-rois = flip_ordering[rois]
-
-# extract parcel names and colors
-
-axis0=mmp.header.get_index_map(0)
-nmap=list(axis0.named_maps)[0]
-
-keys = [0]
-labels = ['']
-rgba = [(0.0, 0.0, 0.0, 0.0)]
-
-# left hemisphere
-for i in range(181, 361):
-    roi = nmap.label_table[i]
-    labels.append(roi.label[:-4])
-    rgba.append((roi.red, roi.green, roi.blue, roi.alpha))
-    keys.append(i - 180)
-
-# right hemisphere
-for i in range(1, 181):
-    roi = nmap.label_table[i]
-    labels.append(roi.label[:-4])
-    rgba.append((roi.red, roi.green, roi.blue, roi.alpha))
-    keys.append(i + 180)
-
-
-# extend the cortical parcellation by the standard subcortical structures from CIFTI-2
 
 map_all = np.zeros(91282, dtype=int)
 
-map_all[:59412] = rois
+cortex_left_=slice(0,29696)
+cortex_right_=slice(29696,59412)
+
+keys = [0, 1, 2]
+labels = ['', 'cortex_left', 'cortex_right']
+rgba = [(1.0, 1.0, 1.0, 1.0), (0.87, 0.09, 0.16, 1.0), (0.92, 0.12, 0.18, 1.0)]
+
+map_all[cortex_left_] = 1
+map_all[cortex_right_] = 2
+
+# extend the cortical parcellation by the standard subcortical structures from CIFTI-2
+
 
 accumbens_left_=slice(59412,59547)
 accumbens_right_=slice(59547,59687)
@@ -99,5 +73,5 @@ rgba = np.vstack((np.array(rgba), rgba_sc))
 keys = np.array(keys)
 
 
-np.savez_compressed('../data/mmp_1.0.npz', map_all=map_all, labels=labels, rgba=rgba, ids=keys)
+np.savez_compressed('../data/standard.npz', map_all=map_all, labels=labels, rgba=rgba, ids=keys)
 

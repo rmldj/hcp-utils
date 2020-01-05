@@ -3,12 +3,12 @@ import numpy as np
 
 rsn = nib.load('../source_data/RSN.dlabel.nii')
 
-print(rsn.shape)
+#print(rsn.shape)
 
 rois = rsn.get_fdata().astype(int)
 
-for i in range(4):
-    print(i, np.unique(rois[i]))
+# for i in range(4):
+#     print(i, np.unique(rois[i]))
 
 vertex_data = np.load('../data/fMRI_vertex_info_32k.npz')
 grayl = vertex_data['grayl']
@@ -31,8 +31,8 @@ yeo7r = yeo7[cortex_right_]
 yeo7l[:] = yeo7lv[grayl]
 yeo7r[:] = yeo7rv[grayr]
 
-print(np.unique(yeo7l))
-print(np.unique(yeo7r))
+#print(np.unique(yeo7l))
+#print(np.unique(yeo7r))
 
 mapyeo7=dict()
 mapyeo7[37]=0
@@ -47,7 +47,7 @@ mapyeo7[40]=7
 for v in mapyeo7:
     yeo7[yeo7==v]=mapyeo7[v]
 
-print(np.unique(yeo7))
+#print(np.unique(yeo7))
 
 labels = ['', 'Visual', 'Somatomotor', 'Dorsal Attention', 'Ventral Attention', 'Limbic', 'Frontoparietal', 'Default']
 
@@ -62,11 +62,12 @@ for i in [41, 43, 38, 44, 42, 39, 40]:
 
 labels = np.array(labels)
 rgba = np.array(rgba)
+keys = np.arange(8)
 
-print(labels)
-print(rgba)
+#print(labels)
+#print(rgba)
 
-np.savez_compressed('../data/yeo7.npz', map_all=yeo7, labels=labels, rgba=rgba)
+np.savez_compressed('../data/yeo7.npz', map_all=yeo7, labels=labels, rgba=rgba, ids=keys)
 
 
 # Yeo 17-network parcellation
@@ -81,8 +82,8 @@ yeo17r = yeo17[cortex_right_]
 yeo17l[:] = yeo17lv[grayl]
 yeo17r[:] = yeo17rv[grayr]
 
-print(np.unique(yeo17l))
-print(np.unique(yeo17r))
+#print(np.unique(yeo17l))
+#print(np.unique(yeo17r))
 
 mapyeo17=dict()
 mapyeo17[37]=0
@@ -107,7 +108,7 @@ mapyeo17[52]=17
 for v in mapyeo17:
     yeo17[yeo17==v]=mapyeo17[v]
 
-print(np.unique(yeo17))
+#print(np.unique(yeo17))
 
 labels = [''] + ['network_{}'.format(i) for i in range(1,18)]
 
@@ -122,8 +123,9 @@ for i in [54, 45, 58, 55, 50, 47, 60, 59, 56, 49, 57, 48, 51, 61, 53, 46, 52]:
 
 labels = np.array(labels)
 rgba = np.array(rgba)
+keys = np.arange(18)
 
-print(labels)
-print(rgba)
+#print(labels)
+#print(rgba)
 
-np.savez_compressed('../data/yeo17.npz', map_all=yeo17, labels=labels, rgba=rgba)
+np.savez_compressed('../data/yeo17.npz', map_all=yeo17, labels=labels, rgba=rgba, ids=keys)

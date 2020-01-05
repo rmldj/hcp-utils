@@ -109,7 +109,7 @@ def combine_meshes(meshL, meshR):
 def load_surfaces(filename_pattern=None, filename_sulc=None):
     if filename_pattern is None:
         filename_pattern = PKGDATA / 'S1200.{}.{}_MSMAll.32k_fs_LR.surf.gii'
-        
+
     meshes = Bunch()
     for variant in ['white', 'midthickness', 'pial', 'inflated', 'flat']:
         count = 0
@@ -138,11 +138,13 @@ def load_surfaces(filename_pattern=None, filename_sulc=None):
 
 
 def _load_hcp_parcellation(variant=None):
-    allowed = ['mmp', 'ca_network', 'ca_parcels', 'yeo7', 'yeo17']
+    allowed = ['mmp', 'ca_network', 'ca_parcels', 'yeo7', 'yeo17', 'standard']
     if variant not in allowed:
         print('argument should be one of ' + ','.join(allowed))
         return
     
+    if variant=='standard':
+        parcnpz = np.load(PKGDATA / 'standard.npz')
     if variant=='mmp':
         parcnpz = np.load(PKGDATA / 'mmp_1.0.npz')
     if variant=='ca_network':
@@ -156,6 +158,7 @@ def _load_hcp_parcellation(variant=None):
     
     parcellation = Bunch()
     parcellation.labels = parcnpz['labels']
+    parcellation.ids = parcnpz['ids']
     parcellation.map_all = parcnpz['map_all']
     parcellation.rgba = parcnpz['rgba']
 
@@ -166,16 +169,60 @@ ca_network = _load_hcp_parcellation('ca_network')
 ca_parcels = _load_hcp_parcellation('ca_parcels')
 yeo7 = _load_hcp_parcellation('yeo7')
 yeo17 = _load_hcp_parcellation('yeo17')
+standard = _load_hcp_parcellation('standard')
 
 def view_parcellation(meshLR, parcellation):
     cmap = matplotlib.colors.ListedColormap(parcellation.rgba)
     return plotting.view_surf(meshLR, cortex_data(parcellation.map_all), symmetric_cmap=False, cmap=cmap)
 
+
+
 def parcellation_labels(parcellation):
-    patches = [mpatches.Patch(color=col, label=nm) for nm, col in zip(parcellation.labels, parcellation.rgba)]
-    plt.legend(handles=patches)
-    plt.axis('off')
+    n = len(parcellation.labels)
+    ncols = 4
+    nrows = n // ncols + 1
+
+    dpi = 72
+    h = 12
+    dh = 6
+    H = h + dh
+
+    Y = (nrows + 1) * H
+    fig_height = Y / dpi
+
+
+    fig, ax = plt.subplots(figsize=(17, fig_height))
+    X, _ = fig.get_dpi() * fig.get_size_inches()
+    w = X/ncols
+
+    for i in range(n):
+        label = parcellation.labels[i]
+        if label == '':
+            label = 'None'
+        
+        name = '{} ({})'.format(label, parcellation.ids[i])
+
+        col = i // nrows
+        row = i % nrows
+        y = Y - (row * H) - H
+
+        xi = w * (col + 0.05)
+        xf = w * (col + 0.25)
+        xt = w * (col + 0.3)
+
+        ax.text(xt, y + h/2 , name, fontsize=h, horizontalalignment='left', verticalalignment='center')
+
+        ax.add_patch(mpatches.Rectangle((xi, y), xf-xi, h ,linewidth=1,edgecolor='k',facecolor=parcellation.rgba[i]))
+    
+    ax.set_xlim(0, X)
+    ax.set_ylim(0, Y)
+    ax.set_axis_off()
+
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0, hspace=0, wspace=0)
     plt.show()
+
+
+
 
 def normalize(X):
     return (X - np.mean(X,axis=0))/np.std(X,axis=0)
