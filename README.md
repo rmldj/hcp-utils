@@ -1,8 +1,8 @@
-# hcp-utils
+# hcp-utils (WORK IN PROGRESS)
 
-Utilities to use HCP data with nilearn
+Utilities to use HCP and HCP-like data with nilearn
 
-
+TO BE EXPANDED...
 
 ## External data
 

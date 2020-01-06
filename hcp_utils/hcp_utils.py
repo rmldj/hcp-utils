@@ -189,7 +189,7 @@ def parcellation_labels(parcellation):
     Y = (nrows + 1) * H
     fig_height = Y / dpi
 
-    fig, ax = plt.subplots(figsize=(17, fig_height))
+    fig, ax = plt.subplots(figsize=(18, fig_height))
     X, _ = fig.get_dpi() * fig.get_size_inches()
     w = X/ncols
 
@@ -217,7 +217,7 @@ def parcellation_labels(parcellation):
     ax.set_axis_off()
 
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0, hspace=0, wspace=0)
-    plt.show()
+    
 
 
 
