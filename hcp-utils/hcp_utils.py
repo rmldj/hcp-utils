@@ -136,6 +136,7 @@ def load_surfaces(filename_pattern=None, filename_sulc=None):
 
     return meshes
 
+mesh = load_surfaces()
 
 def _load_hcp_parcellation(variant=None):
     allowed = ['mmp', 'ca_network', 'ca_parcels', 'yeo7', 'yeo17', 'standard']
@@ -175,8 +176,6 @@ def view_parcellation(meshLR, parcellation):
     cmap = matplotlib.colors.ListedColormap(parcellation.rgba)
     return plotting.view_surf(meshLR, cortex_data(parcellation.map_all), symmetric_cmap=False, cmap=cmap)
 
-
-
 def parcellation_labels(parcellation):
     n = len(parcellation.labels)
     ncols = 4
@@ -189,7 +188,6 @@ def parcellation_labels(parcellation):
 
     Y = (nrows + 1) * H
     fig_height = Y / dpi
-
 
     fig, ax = plt.subplots(figsize=(17, fig_height))
     X, _ = fig.get_dpi() * fig.get_size_inches()
