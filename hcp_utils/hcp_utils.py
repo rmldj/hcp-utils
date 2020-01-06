@@ -108,7 +108,7 @@ def combine_meshes(meshL, meshR):
 
 def load_surfaces(filename_pattern=None, filename_sulc=None):
     if filename_pattern is None:
-        filename_pattern = PKGDATA / 'S1200.{}.{}_MSMAll.32k_fs_LR.surf.gii'
+        filename_pattern = str(PKGDATA / 'S1200.{}.{}_MSMAll.32k_fs_LR.surf.gii')
 
     meshes = Bunch()
     for variant in ['white', 'midthickness', 'pial', 'inflated', 'flat']:
@@ -225,4 +225,11 @@ def parcellation_labels(parcellation):
 def normalize(X):
     return (X - np.mean(X,axis=0))/np.std(X,axis=0)
 
+def parcellate(X, parcellation, method=np.mean):
+    n = len(parcellation.ids)
+    Xp = np.zeros((len(X), np), dtype=X.dtype)
+    for i, k in enumerate(parcellation.ids):
+        if k!=0:
+            Xp[:, i] = method(X[:, parcellation.map_all==k], axis=1)
+    return Xp
 

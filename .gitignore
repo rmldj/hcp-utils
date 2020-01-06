@@ -1,2 +1,5 @@
 __pycache__
 notebooks
+build
+dist
+hcp_utils.egg-info
