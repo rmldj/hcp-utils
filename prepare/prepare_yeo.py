@@ -10,7 +10,7 @@ rois = rsn.get_fdata().astype(int)
 # for i in range(4):
 #     print(i, np.unique(rois[i]))
 
-vertex_data = np.load('../data/fMRI_vertex_info_32k.npz')
+vertex_data = np.load('../hcp-utils/data/fMRI_vertex_info_32k.npz')
 grayl = vertex_data['grayl']
 grayr = vertex_data['grayr']
 
@@ -67,7 +67,7 @@ keys = np.arange(8)
 #print(labels)
 #print(rgba)
 
-np.savez_compressed('../data/yeo7.npz', map_all=yeo7, labels=labels, rgba=rgba, ids=keys)
+np.savez_compressed('../hcp-utils/data/yeo7.npz', map_all=yeo7, labels=labels, rgba=rgba, ids=keys)
 
 
 # Yeo 17-network parcellation
@@ -128,4 +128,4 @@ keys = np.arange(18)
 #print(labels)
 #print(rgba)
 
-np.savez_compressed('../data/yeo17.npz', map_all=yeo17, labels=labels, rgba=rgba, ids=keys)
+np.savez_compressed('../hcp-utils/data/yeo17.npz', map_all=yeo17, labels=labels, rgba=rgba, ids=keys)

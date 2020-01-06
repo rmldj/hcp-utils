@@ -28,7 +28,7 @@ labels = np.array(labels)
 rgba = np.array(rgba)
 keys = np.array(keys)
 
-np.savez_compressed('../data/ca_network_1.1.npz', map_all=rois, labels=labels, rgba=rgba, ids=keys)
+np.savez_compressed('../hcp-utils/data/ca_network_1.1.npz', map_all=rois, labels=labels, rgba=rgba, ids=keys)
 
 #print(np.unique(rois))
 
@@ -64,4 +64,4 @@ labels = np.array(labels)
 rgba = np.array(rgba)
 keys = np.array(keys)
 
-np.savez_compressed('../data/ca_parcels_1.1.npz', map_all=rois, labels=labels, rgba=rgba, ids=keys)
+np.savez_compressed('../hcp-utils/data/ca_parcels_1.1.npz', map_all=rois, labels=labels, rgba=rgba, ids=keys)
