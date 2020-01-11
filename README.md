@@ -1,6 +1,12 @@
 # hcp-utils (WORK IN PROGRESS)
 
-Utilities to use  [Human Connectome Project](https://www.humanconnectome.org/) (HCP) and HCP-like data with [nilearn](https://nilearn.github.io/). The utilities mainly deal with plotting surface data, accessing the predefined subcortical structures as well as using various parcellations. All functions work directly with numpy arrays of the format `Tx91282` for fMRI data, with `T` being the number of time frames, while `91282` is the standard HCP dimensionality for the 3T cortical surface and subcortical data.
+Utilities to use  [Human Connectome Project](https://www.humanconnectome.org/) (HCP) and HCP-like data with [nilearn](https://nilearn.github.io/). 
+
+
+![brain image](https://github.com/rmldj/hcp-utils/raw/master/images/image.png)
+
+
+The utilities mainly deal with plotting surface data, accessing the predefined subcortical structures as well as using various parcellations. All functions work directly with numpy arrays of the format `Tx91282` for fMRI data, with `T` being the number of time frames, while `91282` is the standard HCP dimensionality for the 3T cortical surface and subcortical data.
 
 ## Documentation
 
