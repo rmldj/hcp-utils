@@ -1,8 +1,26 @@
 # hcp-utils (WORK IN PROGRESS)
 
-Utilities to use HCP and HCP-like data with nilearn
+Utilities to use HCP and HCP-like data with [nilearn](https://nilearn.github.io/).
 
-TO BE EXPANDED...
+## Documentation
+
+Find the documentation at ...
+
+## Installation
+
+Make sure that you have the following packages installed
+```
+nibabel, nilearn, numpy, scikit-learn, matplotlib, pandas
+```
+Then install with 
+```
+pip install hcp_utils   # TO BE IMPLEMENTED
+```
+upgrade with
+```
+pip install --upgrade hcp_utils
+```
+
 
 ## External data
 
