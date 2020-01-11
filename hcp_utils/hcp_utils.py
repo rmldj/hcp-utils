@@ -6,7 +6,9 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
+import pandas as pd
 import os
+import re
 from pathlib import Path
 
 # define standard structures (for 3T HCP-like data)
@@ -46,7 +48,7 @@ struct.thalamus_right = slice(90034,None)
 # for a standard 3T HCP style fMRI image get_HCP_vertex_info(img) should coincide with vertex_info
 
 
-def make_vertex_info(grayl, grayr, num_meshl, num_meshr):
+def _make_vertex_info(grayl, grayr, num_meshl, num_meshr):
     vertex_info = Bunch()
     vertex_info.grayl = grayl
     vertex_info.grayr = grayr
@@ -57,9 +59,13 @@ def make_vertex_info(grayl, grayr, num_meshl, num_meshr):
 PKGDATA = Path(__file__).parent / 'data'
 
 vertex_data = np.load(PKGDATA / 'fMRI_vertex_info_32k.npz')
-vertex_info = make_vertex_info(vertex_data['grayl'], vertex_data['grayr'], int(vertex_data['num_meshl']), int(vertex_data['num_meshr']))
+vertex_info = _make_vertex_info(vertex_data['grayl'], vertex_data['grayr'], int(vertex_data['num_meshl']), int(vertex_data['num_meshr']))
 
 def get_HCP_vertex_info(img):
+    """
+    Extracts information about the relation of indices in the fMRI data to the surface meshes and the left/right cortex.
+    Use only for meshes different from the 32k standard one which is loaded by default.
+    """
     assert isinstance(img, nib.cifti2.cifti2.Cifti2Image)
     
     map1 = img.header.get_index_map(1)
@@ -69,18 +75,26 @@ def get_HCP_vertex_info(img):
     grayr = np.array(bms[1].vertex_indices)
     num_meshl = bms[0].surface_number_of_vertices
     num_meshr = bms[1].surface_number_of_vertices
-    return make_vertex_info(grayl, grayr, num_meshl, num_meshr)
+    return _make_vertex_info(grayl, grayr, num_meshl, num_meshr)
 
 
 # The following three functions take a 1D array of fMRI grayordinates
 # and return the array on the left- right- or both surface meshes
 
 def left_cortex_data(arr, vertex_info=vertex_info):
+    """
+    Takes a 1D array of fMRI grayordinates and returns the values on the vertices of the left cortex mesh which is neccessary for surface visualization. 
+    The unused vertices are filled with zeros. 
+    """
     out = np.zeros(vertex_info.num_meshl)
     out[vertex_info.grayl] = arr[:len(vertex_info.grayl)]
     return out
 
 def right_cortex_data(arr, vertex_info=vertex_info):
+    """
+    Takes a 1D array of fMRI grayordinates and returns the values on the vertices of the right cortex mesh which is neccessary for surface visualization. 
+    The unused vertices are filled with zeros. 
+    """
     out = np.zeros(vertex_info.num_meshr)
     if len(arr) == len(vertex_info.grayr):
         # means arr is already just the right cortex
@@ -90,6 +104,10 @@ def right_cortex_data(arr, vertex_info=vertex_info):
     return out
 
 def cortex_data(arr):
+    """
+    Takes a 1D array of fMRI grayordinates and returns the values on the vertices of the full cortex mesh which is neccessary for surface visualization. 
+    The unused vertices are filled with zeros. 
+    """
     dataL = left_cortex_data(arr)
     dataR = right_cortex_data(arr)
     return np.hstack((dataL, dataR))
@@ -98,6 +116,9 @@ def cortex_data(arr):
 # used internally by load_surfaces
 
 def combine_meshes(meshL, meshR):
+    """
+    Combines left and right meshes into a single mesh for both hemispheres.
+    """
     coordL, facesL = meshL
     coordR, facesR = meshR
     coord = np.vstack((coordL, coordR))
@@ -106,28 +127,68 @@ def combine_meshes(meshL, meshR):
 
 # loads all available surface meshes
 
-def load_surfaces(filename_pattern=None, filename_sulc=None):
-    if filename_pattern is None:
+def load_surfaces(example_filename=None, filename_sulc=None):
+    """
+    Loads all available surface meshes and sulcal depth file.
+    Combines the left and right hemispheres into joint meshes for the whole brain.
+    With no arguments loads the HCP S1200 group average meshes.
+    If loading subject specific meshes it is enough to specify a single `example_filename` being one of
+    `white|midthickness|pial|inflated|very_inflated` type e.g.
+
+    ```
+    mesh = load_surfaces(example_filename='PATH/sub-44.L.pial.32k_fs_LR.surf.gii')
+    ```
+    The function will load all available surfaces from that location.
+
+    """
+    if example_filename is None:
         filename_pattern = str(PKGDATA / 'S1200.{}.{}_MSMAll.32k_fs_LR.surf.gii')
+    else:
+        filename_pattern = re.sub('\.(L|R)\.', '.{}.', example_filename)
+        filename_pattern = re.sub('white|midthickness|pial|inflated|very_inflated', '{}', filename_pattern)
+
+    flatsphere_pattern = str(PKGDATA / 'S1200.{}.{}.32k_fs_LR.surf.gii')
 
     meshes = Bunch()
-    for variant in ['white', 'midthickness', 'pial', 'inflated', 'flat']:
+    for variant in ['white', 'midthickness', 'pial', 'inflated', 'very_inflated', 'flat' , 'sphere']:
         count = 0
         for hemisphere, hemisphere_name in [('L', 'left'), ('R', 'right')]:
-            filename = filename_pattern.format(hemisphere, variant)
+            if variant in ['flat' , 'sphere']:
+                filename = flatsphere_pattern.format(hemisphere, variant)
+            else:
+                filename = filename_pattern.format(hemisphere, variant)
             if os.path.exists(filename):
-                meshes[variant+'_'+hemisphere_name] = surface.load_surf_mesh(filename)
+                coord, faces = surface.load_surf_mesh(filename)
+                if variant=='flat':
+                    coordnew = np.zeros_like(coord)
+                    coordnew[:, 1] = coord[:, 0]
+                    coordnew[:, 2] = coord[:, 1]
+                    coordnew[:, 0] = 0
+                    coord = coordnew
+                meshes[variant+'_'+hemisphere_name] = coord, faces
                 count += 1
             else:
                 print('Cannot find', filename)
         if count==2:
-            meshes[variant] = combine_meshes(meshes[variant+'_left'], meshes[variant+'_right'])
+            if variant == 'flat':
+                coordl, facesl = meshes['flat_left']
+                coordr, facesr = meshes['flat_right']
+                coordlnew = coordl.copy()
+                coordlnew[:, 1] = coordl[:, 1] - 250.0
+                coordrnew = coordr.copy()
+                coordrnew[:, 1] = coordr[:, 1] + 250.0
+                meshes['flat'] = combine_meshes( (coordlnew, facesl), (coordrnew, facesr) )
+            else:
+                meshes[variant] = combine_meshes(meshes[variant+'_left'], meshes[variant+'_right'])
 
     if filename_sulc is None:
         filename_sulc = filename_pattern.format('XX','XX').replace('XX.XX', 'sulc').replace('surf.gii','dscalar.nii')
     if os.path.exists(filename_sulc):
-        sulc_image = nib.load(filename_sulc)
-        meshes['sulc'] = - sulc_image.get_fdata()[0]
+        sulc_data = - nib.load(filename_sulc).get_fdata()[0]
+        if len(sulc_data)==59412:
+            # this happens for HCP S1200 group average data
+            sulc_data = cortex_data(sulc_data)
+        meshes['sulc'] = sulc_data
         num = len(meshes.sulc)
         meshes['sulc_left'] = meshes.sulc[:num//2]
         meshes['sulc_right'] = meshes.sulc[num//2:]
@@ -137,6 +198,8 @@ def load_surfaces(filename_pattern=None, filename_sulc=None):
     return meshes
 
 mesh = load_surfaces()
+
+# parcellations
 
 def _load_hcp_parcellation(variant=None):
     allowed = ['mmp', 'ca_network', 'ca_parcels', 'yeo7', 'yeo17', 'standard']
@@ -158,12 +221,28 @@ def _load_hcp_parcellation(variant=None):
         parcnpz = np.load(PKGDATA / 'yeo17.npz')
     
     parcellation = Bunch()
-    parcellation.labels = parcnpz['labels']
     parcellation.ids = parcnpz['ids']
     parcellation.map_all = parcnpz['map_all']
     parcellation.rgba = parcnpz['rgba']
 
+    labels = parcnpz['labels']
+    labelsdict = dict()
+    for i, k in enumerate(parcellation.ids):
+        labelsdict[k] = labels[i] 
+
+    parcellation.labels = labelsdict
+
+    i = 0
+    nontrivial_ids = []
+    for k in parcellation.ids:
+        if k!=0:
+            nontrivial_ids.append(k)
+            i += 1
+    parcellation.nontrivial_ids = np.array(nontrivial_ids)
+
     return parcellation
+
+# predefined parcellations
 
 mmp = _load_hcp_parcellation('mmp')
 ca_network = _load_hcp_parcellation('ca_network')
@@ -173,11 +252,17 @@ yeo17 = _load_hcp_parcellation('yeo17')
 standard = _load_hcp_parcellation('standard')
 
 def view_parcellation(meshLR, parcellation):
+    """
+    View the given parcellation on an a whole brain surface mesh.
+    """
     cmap = matplotlib.colors.ListedColormap(parcellation.rgba)
     return plotting.view_surf(meshLR, cortex_data(parcellation.map_all), symmetric_cmap=False, cmap=cmap)
 
 def parcellation_labels(parcellation):
-    n = len(parcellation.labels)
+    """
+    Displays names of ROI's in a parcellation together with color coding and the corresponding numeric ids.
+    """
+    n = len(parcellation.ids)
     ncols = 4
     nrows = n // ncols + 1
 
@@ -194,7 +279,7 @@ def parcellation_labels(parcellation):
     w = X/ncols
 
     for i in range(n):
-        label = parcellation.labels[i]
+        label = parcellation.labels[parcellation.ids[i]]
         if label == '':
             label = 'None'
         
@@ -219,17 +304,78 @@ def parcellation_labels(parcellation):
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0, hspace=0, wspace=0)
     
 
-
-
-
-def normalize(X):
-    return (X - np.mean(X,axis=0))/np.std(X,axis=0)
-
 def parcellate(X, parcellation, method=np.mean):
-    n = len(parcellation.ids)
-    Xp = np.zeros((len(X), np), dtype=X.dtype)
-    for i, k in enumerate(parcellation.ids):
+    """
+    Parcellates the data into ROI's using `method` (mean by default). Ignores the unassigned grayordinates with id=0.
+    Works both for time-series 2D data and snapshot 1D data.
+    """
+    n = np.sum(parcellation.ids!=0)
+    if X.ndim==2:
+        Xp = np.zeros((len(X), n), dtype=X.dtype)
+    else:
+        Xp = np.zeros(np, dtype=X.dtype)
+    i = 0
+    for k in parcellation.ids:
         if k!=0:
-            Xp[:, i] = method(X[:, parcellation.map_all==k], axis=1)
+            if X.ndim==2:
+                Xp[:, i] = method(X[:, parcellation.map_all==k], axis=1)
+            else:
+                Xp[i] = method(X[parcellation.map_all==k])
+            i += 1
     return Xp
 
+def unparcellate(Xp, parcellation):
+    """
+    Takes as input time-series (2D) or snapshot (1D) parcellated data.
+    Creates full grayordinate data with grayordinates set to the value of the parcellated data.
+    Can be useful for visualization.
+    """
+    n = len(parcellation.map_all)
+    if Xp.ndim==2:
+        X = np.zeros((len(Xp), n), dtype=Xp.dtype)
+    else:
+        X = np.zeros(n, dtype=Xp.dtype)
+    i = 0
+    for k in parcellation.ids:
+        if k!=0:
+            if Xp.ndim==2:
+                X[:, parcellation.map_all==k] = Xp[:,i][:,np.newaxis]
+            else:
+                X[parcellation.map_all==k] = Xp[i]
+            i += 1
+    return X
+
+def mask(X, mask):
+    """
+    Takes 1D data `X` and a mask `mask`. Sets the exterior of mask to zero.
+    Can be useful for visualization.
+    """
+    X_masked = np.zeros_like(X)
+    X_masked[mask] = X[mask]
+    return X_masked
+
+
+def ranking(Xp, parcellation, descending=True):
+    """
+    Returns a dataframe with sorted values in the 1D parcellated array with appropriate labels
+    """
+    ind = np.argsort(Xp)
+    if descending:
+        ind = ind[::-1]
+    labels = []
+    ids = []
+    for i in range(len(Xp)):
+        j = ind[i]
+        k = parcellation.nontrivial_ids[j]
+        labels.append(parcellation.labels[k])
+        ids.append(k)
+    return pd.DataFrame({'region':labels, 'id':ids, 'data':Xp[ind]})
+
+
+# Other utilities
+
+def normalize(X):
+    """
+    Normalizes data so that each grayordinate has zero (temporal) mean and unit standard deviation.
+    """
+    return (X - np.mean(X,axis=0))/np.std(X,axis=0)
