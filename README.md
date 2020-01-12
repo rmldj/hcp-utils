@@ -1,6 +1,6 @@
 # hcp-utils (WORK IN PROGRESS)
 
-Utilities to use  [Human Connectome Project](https://www.humanconnectome.org/) (HCP) and HCP-like data with [nilearn](https://nilearn.github.io/). 
+Utilities to use  [Human Connectome Project](https://www.humanconnectome.org/) (HCP) data and HCP-like data (e.g. obtained from legacy data using [ciftify](https://github.com/edickie/ciftify)) with [nilearn](https://nilearn.github.io/). 
 
 
 ![brain image](https://github.com/rmldj/hcp-utils/raw/master/images/image.png)
