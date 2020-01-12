@@ -353,7 +353,7 @@ def mask(X, mask, fill=0):
     Can be useful for visualization.
     """
     X_masked = np.zeros_like(X)
-    X_masked[:] = 0
+    X_masked[:] = fill
     X_masked[mask] = X[mask]
     return X_masked
 

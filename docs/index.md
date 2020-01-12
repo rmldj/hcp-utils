@@ -48,7 +48,7 @@ We use `nibabel` to load a CIFTI file with the fMRI time series. We also extract
 ```
 img = nib.load('PATH/TO/fMRI_data_file.dtseries.nii')
 X = img.get_fdata()
-X.shape     # e.g. (1200, 91282)
+X.shape     # e.g. (700, 91282)
 ```
 which corresponds to 600 time-steps and 91282 grayordinates.
 
@@ -56,7 +56,7 @@ The CIFTI file format partitions the 91282 grayordinates into the left- and righ
 
 ```
 X_hipL = X[:, hcp.struct.hippocampus_left]
-X_hipL.shape    # (1200, 764)
+X_hipL.shape    # (700, 764)
 ```
 
 The other available regions are
@@ -120,12 +120,74 @@ plotting.view_surf(mesh_sub.inflated, hcp.cortex_data(Xn[29]),
 * the Cole-Anticevic Brain-wide Network Partition (version 1.1) which 
     * extends the Multi-Modal Parcellation of the cortex by a parcellation of the subcortical regions - `hcp.ca_parcels`
     * groups the cortical (MMP) and subcortical regions into functional networks - `hcp.ca_network`
-* the *Yeo et.al.* 7- and 17- (cortical) functional networks - `hcp.yeo7` and `hcp.yeo17`
+* the *Yeo et.al.* 7- and 17-region (cortical) functional networks - `hcp.yeo7` and `hcp.yeo17`
 * the standard CIFTI partition into the main subcortical regions - `hcp.standard`
 
 For references see the [github page](https://github.com/rmldj/hcp-utils). Please cite the relevant papers if you make use of these parcellations. These parcellations were extracted from the relevant `.dlabel.nii` files by the scripts in the `prepare/` folder of the package repository.
 
 All the labels and the corresponding numerical ids for these parcellations are shown on the [parcellation labels](./parcellation_labels.html) page.
+
+The data for a parcellation contained e.g. in `hcp.mmp` have the following fields:
+* `parcellation.ids` - numerical ids of the parcels. 0 means unassigned.
+* `parcellation.nontrivial_ids` - same but with the unassigned one omitted.
+* `parcellation.labels` - a dictionary which maps numerical id to the name of the region
+* `parcellation.map_all` - an integer array of size 91282, giving the id of each grayordinate
+* `parcellation.rgba` - rgba color (extracted from the source files)
+
+One can view a cortical parcellation on the 3D surface plot:
+
+```
+hcp.view_parcellation(mesh_sub.inflated, hcp.yeo7)
+```
+
+![yeo-7 parcellation image](images/out3.png)
+
+One can view the color coding of the labels together with the numerical ids through
+
+```
+hcp.parcellation_labels(hcp.yeo7)
+```
+
+![yeo-7 parcellation labels](images/out4.png)
+
+One can obtain the parcellated time series (by taking the mean over each parcel) through
+
+```
+Xp = hcp.parcellate(Xn, hcp.yeo7)
+Xp.shape    # (700, 7)
+```
+
+One could e.g. take the maximum by writing `hcp.parcellate(Xn, hcp.yeo7, method=np.amax)`.
+For visualization it might be interesting to plot the parcellated value on each location of the brain. For that we use the `unparcellate(Xp, parcellation)` function:
+
+```
+plotting.view_surf(mesh_sub.inflated, hcp.cortex_data(hcp.unparcellate(Xp[29], hcp.yeo7)), 
+    threshold=0.1, bg_map=mesh_sub.sulc)
+```
+
+![yeo-7 parcellated data](images/out5.png)
+
+If we wanted to focus just on the activity in the somatomotor network of Yeo-7, we can mask out to 0 the remaining parts of the brain using `mask(X, mask, fill=0)`. This is of course only useful for visualization:
+
+```
+plotting.view_surf(mesh_sub.inflated, hcp.cortex_data(hcp.mask(Xn[29], hcp.yeo7.map_all==2)), 
+    threshold=0.1, bg_map=mesh_sub.sulc)
+```
+
+![somatomotor masked data](images/out6.png)
+
+Finally, once we have parcellated 1D data (e.g. a snapshot in time or the results of some analysis), we can order the regions according to the values using the function `ranking(Xp, parcellation, descending=True)`:
+
+```
+df = hcp.ranking(Xp[29], hcp.yeo7)
+df
+```
+
+![region ranking](images/out7.png)
+
+The above function returns a `Pandas` data frame which of course can be used for further analysis.
+
+
 
 
 
