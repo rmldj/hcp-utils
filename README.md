@@ -1,9 +1,14 @@
 # hcp-utils (WORK IN PROGRESS)
 
-Utilities to use  [Human Connectome Project](https://www.humanconnectome.org/) (HCP) data and HCP-like data (e.g. obtained from legacy data using [ciftify](https://github.com/edickie/ciftify)) with [nilearn](https://nilearn.github.io/). 
+This package contains utilities to use  [Human Connectome Project](https://www.humanconnectome.org/) (HCP) data and HCP-like data (e.g. obtained from legacy data using [ciftify](https://github.com/edickie/ciftify)) as well as corresponding parcellations with [nilearn](https://nilearn.github.io/) and other Python tools. 
+
+The HCP data differs from conventional volumetric fMRI data which records the BOLD signal from each *voxel* in a 3D volume in that the signal from the cortical surface is treated as a folded two dimensional surface, and hence the data is associated with vertices of a predefined surface mesh, while the subcortical structures are described volumetrically using voxels. 
+
+The CIFTI (more precisely CIFTI-2) file format encompasses both the cortical 2D surface data as well as the subcortical volume data. However, only the voxels associated with relevant subcortical structures are kept.
+Thus these data are quite richly structured. Although the standard Python tools for dealing with fMRI data like [nibabel](https://nipy.org/nibabel/) can read both the CIFTI-2 files containing the fMRI signals and the GIFTI files containing the surface mesh definitions, there is not much that one could do further out-of-the-box, in particular visualization using [nilearn](https://nilearn.github.io/) or processing parcellated data using e.g. machine learning tools which work with `numpy` arrays. The goal of this package is to ease the interoperability of HCP data and these standard Python tools.
 
 
-![brain image](https://github.com/rmldj/hcp-utils/raw/master/images/image.png)
+![brain image](images/image.png)
 
 
 The utilities mainly deal with plotting surface data, accessing the predefined subcortical structures as well as using various parcellations. Various helper functions aid e.g. in mapping the HCP fMRI cortical data to surface vertices for visualization etc. The functions work directly with numpy arrays of shape `Tx91282` or `91282` for fMRI data, with `T` being the number of time frames, while `91282` is the standard HCP dimensionality for the 3T cortical surface and subcortical data.
