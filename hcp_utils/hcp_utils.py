@@ -347,12 +347,13 @@ def unparcellate(Xp, parcellation):
             i += 1
     return X
 
-def mask(X, mask):
+def mask(X, mask, fill=0):
     """
-    Takes 1D data `X` and a mask `mask`. Sets the exterior of mask to zero.
+    Takes 1D data `X` and a mask `mask`. Sets the exterior of mask to a constant (by default zero).
     Can be useful for visualization.
     """
     X_masked = np.zeros_like(X)
+    X_masked[:] = 0
     X_masked[mask] = X[mask]
     return X_masked
 
