@@ -1,6 +1,7 @@
 # Parcellation labels
 
-Here we summarize the labels and the corresponding numerical ids of regions of the parcellations included in `hcp_utils`. We start with the smaller parcellations ending with the largest ones.
+Here we summarize the labels and the corresponding numerical ids of regions of the parcellations included in `hcp_utils`. For details see the references in the [package repository README](https://github.com/rmldj/hcp-utils).
+We start with the smaller parcellations ending with the largest ones.
 
 [Return to the main documentation](index.html)
 
@@ -33,9 +34,10 @@ hcp.parcellation_labels(hcp.yeo17)
 
 ### Cole-Anticevic brain-wide functional networks
 
-These functional networks differ from the previous ones
-* always contain whole cortical parcels from the MMP parcellation
-* extend to the subcortical structures 
+These functional networks differ from the previous ones in the following ways:
+
+* they always contain whole cortical parcels from the MMP parcellation
+* they extend also to the subcortical structures 
 
 ```
 hcp.parcellation_labels(hcp.ca_network)
