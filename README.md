@@ -10,7 +10,7 @@ The utilities mainly deal with plotting surface data, accessing the predefined s
 
 ## Documentation
 
-Find the documentation at ...
+Find the documentation at [rmldj.github.io/hcp-utils](https://rmldj.github.io/hcp-utils/)
 
 ## Installation
 

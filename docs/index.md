@@ -127,7 +127,7 @@ For references see the [github page](https://github.com/rmldj/hcp-utils). Please
 
 All the labels and the corresponding numerical ids for these parcellations are shown on the [parcellation labels](./parcellation_labels.html) page.
 
-The data for a parcellation contained e.g. in `hcp.mmp` have the following fields:
+The data for a parcellation contained e.g. in `hcp.mmp` has the following fields:
 * `parcellation.ids` - numerical ids of the parcels. 0 means unassigned.
 * `parcellation.nontrivial_ids` - same but with the unassigned one omitted.
 * `parcellation.labels` - a dictionary which maps numerical id to the name of the region
@@ -142,7 +142,7 @@ hcp.view_parcellation(mesh_sub.inflated, hcp.yeo7)
 
 ![yeo-7 parcellation image](images/out3.png)
 
-One can view the color coding of the labels together with the numerical ids through
+The color coding of the labels together with the numerical ids can be displayed through
 
 ```
 hcp.parcellation_labels(hcp.yeo7)
@@ -150,18 +150,22 @@ hcp.parcellation_labels(hcp.yeo7)
 
 ![yeo-7 parcellation labels](images/out4.png)
 
-One can obtain the parcellated time series (by taking the mean over each parcel) through
+The main point of a parcellation is to obtain the parcellated time series (by taking the mean over each parcel) for further analysis. This can be done through
 
 ```
 Xp = hcp.parcellate(Xn, hcp.yeo7)
 Xp.shape    # (700, 7)
 ```
 
-One could e.g. take the maximum by writing `hcp.parcellate(Xn, hcp.yeo7, method=np.amax)`.
+One could e.g. take the maximum by writing instead
+```
+hcp.parcellate(Xn, hcp.yeo7, method=np.amax)
+```
 For visualization it might be interesting to plot the parcellated value on each location of the brain. For that we use the `unparcellate(Xp, parcellation)` function:
 
 ```
-plotting.view_surf(mesh_sub.inflated, hcp.cortex_data(hcp.unparcellate(Xp[29], hcp.yeo7)), 
+plotting.view_surf(mesh_sub.inflated, 
+    hcp.cortex_data(hcp.unparcellate(Xp[29], hcp.yeo7)), 
     threshold=0.1, bg_map=mesh_sub.sulc)
 ```
 
@@ -170,7 +174,8 @@ plotting.view_surf(mesh_sub.inflated, hcp.cortex_data(hcp.unparcellate(Xp[29], h
 If we wanted to focus just on the activity in the somatomotor network of Yeo-7, we can mask out to 0 the remaining parts of the brain using `mask(X, mask, fill=0)`. This is of course only useful for visualization:
 
 ```
-plotting.view_surf(mesh_sub.inflated, hcp.cortex_data(hcp.mask(Xn[29], hcp.yeo7.map_all==2)), 
+plotting.view_surf(mesh_sub.inflated, 
+    hcp.cortex_data(hcp.mask(Xn[29], hcp.yeo7.map_all==2)), 
     threshold=0.1, bg_map=mesh_sub.sulc)
 ```
 
