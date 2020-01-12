@@ -81,21 +81,23 @@ def get_HCP_vertex_info(img):
 # The following three functions take a 1D array of fMRI grayordinates
 # and return the array on the left- right- or both surface meshes
 
-def left_cortex_data(arr, vertex_info=vertex_info):
+def left_cortex_data(arr, fill=0, vertex_info=vertex_info):
     """
     Takes a 1D array of fMRI grayordinates and returns the values on the vertices of the left cortex mesh which is neccessary for surface visualization. 
-    The unused vertices are filled with zeros. 
+    The unused vertices are filled with a constant (zero by default). 
     """
     out = np.zeros(vertex_info.num_meshl)
+    out[:] = fill
     out[vertex_info.grayl] = arr[:len(vertex_info.grayl)]
     return out
 
-def right_cortex_data(arr, vertex_info=vertex_info):
+def right_cortex_data(arr, fill=0, vertex_info=vertex_info):
     """
     Takes a 1D array of fMRI grayordinates and returns the values on the vertices of the right cortex mesh which is neccessary for surface visualization. 
-    The unused vertices are filled with zeros. 
+    The unused vertices are filled with a constant (zero by default). 
     """
     out = np.zeros(vertex_info.num_meshr)
+    out[:] = fill
     if len(arr) == len(vertex_info.grayr):
         # means arr is already just the right cortex
         out[vertex_info.grayr] = arr
@@ -103,13 +105,13 @@ def right_cortex_data(arr, vertex_info=vertex_info):
         out[vertex_info.grayr] = arr[len(vertex_info.grayl):len(vertex_info.grayl) + len(vertex_info.grayr)]
     return out
 
-def cortex_data(arr):
+def cortex_data(arr, fill=0, vertex_info=vertex_info):
     """
     Takes a 1D array of fMRI grayordinates and returns the values on the vertices of the full cortex mesh which is neccessary for surface visualization. 
-    The unused vertices are filled with zeros. 
+    The unused vertices are filled with a constant (zero by default). 
     """
-    dataL = left_cortex_data(arr)
-    dataR = right_cortex_data(arr)
+    dataL = left_cortex_data(arr, fill=fill, vertex_info=vertex_info)
+    dataR = right_cortex_data(arr, fill=fill, vertex_info=vertex_info)
     return np.hstack((dataL, dataR))
 
 # utility function for making a mesh for both hemispheres
