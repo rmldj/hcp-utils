@@ -47,7 +47,7 @@ These group average files are redistributed under the HCP Open Access Data Use T
 
 ### Parcellations
 
-When using the included parcellations, please cite the relevant papers.
+When using the included parcellations, please cite the relevant papers, which include full details.
 
 **The Glasser MMP1.0 Parcellation:** Glasser, Matthew F., Timothy S. Coalson, Emma C. Robinson, Carl D. Hacker, John Harwell, Essa Yacoub, Kamil Ugurbil, et al. 2016. “A Multi-Modal Parcellation of Human Cerebral Cortex.” Nature 536 (7615): 171–78.  http://doi.org/10.1038/nature18933 (see in particular the details in *Supplementary	Neuroanatomical	Results*).
 

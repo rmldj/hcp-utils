@@ -71,7 +71,7 @@ hcp.struct.keys()
 
 > dict_keys(['cortex_left', 'cortex_right', 'cortex', 'subcortical', 'accumbens_left', 'accumbens_right', 'amygdala_left', 'amygdala_right', 'brainStem', 'caudate_left', 'caudate_right', 'cerebellum_left', 'cerebellum_right', 'diencephalon_left', 'diencephalon_right', 'hippocampus_left', 'hippocampus_right', 'pallidum_left', 'pallidum_right', 'putamen_left', 'putamen_right', 'thalamus_left', 'thalamus_right'])
 
-For convenience we add a function which normalized the data so that each grayordinate has zero (temporal) mean and unit standard deviation:
+For convenience we define a function which normalizes the data so that each grayordinate has zero (temporal) mean and unit standard deviation:
 ```
 Xn = hcp.normalize(X)
 ```
@@ -79,6 +79,7 @@ Xn = hcp.normalize(X)
 ## Plotting
 
 In order to plot the cortical surface data for the whole bran, one has to have the surface meshes appropriate for HCP data and combine the ones corresponding to the left and right hemispheres into a single mesh. 
+
 In addition, the HCP fMRI data are defined on a *subset* of the surface vertices (29696 out of 32492 for the left cortex and 29716 out of 32492 for the right cortex). Hence we have to construct an auxilliary array of size 32492 or 64984 with the fMRI data points inserted in appropriate places and a constant (zero by default) elsewhere. This is achieved by the `cortex_data(arr, fill=0)`, `left_cortex_data(arr, fill=0)` and `right_cortex_data(arr, fill=0)` functions.
 
 `hcp_utils` comes with preloaded surface meshes from the HCP S1200 group average data as well as the whole brain meshes composed of both the left and right meshes. In addition sulcal depth data is included for shading. These data are packaged in the following way:
@@ -89,7 +90,7 @@ hcp.mesh.keys()
 
 > dict_keys(['white_left', 'white_right', 'white', 'midthickness_left', 'midthickness_right', 'midthickness', 'pial_left', 'pial_right', 'pial', 'inflated_left', 'inflated_right', 'inflated', 'very_inflated_left', 'very_inflated_right', 'very_inflated', 'flat_left', 'flat_right', 'flat', 'sphere_left', 'sphere_right', 'sphere', 'sulc', 'sulc_left', 'sulc_right'])
 
-Here `white` is the top of white matter, `pial` is the surface of the brain, `midthickness` is halfway between them, while `inflated` and `very_inflated` may be better for visualization. `flat` is a 2D flat representation.
+Here `white` is the top of white matter, `pial` is the surface of the brain, `midthickness` is halfway between them, while `inflated` and `very_inflated` are mostly useful for visualization. `flat` is a 2D flat representation.
 
 In order to make an interactive 3D surface plot using `nilearn` of the normalized fMRI data (thresholded at 1.5) at t=29 on the inflated group average mesh, we write
 
@@ -100,7 +101,7 @@ plotting.view_surf(hcp.mesh.inflated, hcp.cortex_data(Xn[29]),
 
 ![brain image](images/out1.png)
 
-The group average surfaces are much smoother than the ones for individual subjects. If we have those at our disposal we can load them and use them for visualization.
+The group average surfaces are much smoother than the ones for individual subjects. If we have the latter ones at our disposal, we can also load them and use them for visualization.
 
 ```
 mesh_sub = hcp.load_surfaces(example_filename='path/to/fsaverage_LR32k/
@@ -108,7 +109,8 @@ mesh_sub = hcp.load_surfaces(example_filename='path/to/fsaverage_LR32k/
 ```
 
 Here as an argument we give just one example filename and `hcp_utils` will try to load all other versions for both hemispheres and the sulcal depth file assuming HCP like naming conventions (the `.R.pial` part here).
-Let's look at the same data but now on the inflated single subject surface:
+
+Let's look at the same data as previously, but now on the inflated single subject surface:
 
 ```
 plotting.view_surf(mesh_sub.inflated, hcp.cortex_data(Xn[29]), 
@@ -119,7 +121,7 @@ plotting.view_surf(mesh_sub.inflated, hcp.cortex_data(Xn[29]),
 
 ## Parcellations
 
-`hcp_utils` comes with a couple of parcellations preloaded. In particular we have the following ones (with the name of the variable with the parcellation data)
+`hcp_utils` comes with a couple of parcellations preloaded. In particular we have the following ones (where we also indicated the name of the variable with the parcellation data)
 
 * the *Glasser et.al.* Multi-Modal Parcellation (MMP 1.0) which partitions each hemisphere of the cortex into 180 regions - `hcp.mmp`
 * the Cole-Anticevic Brain-wide Network Partition (version 1.1) which 
@@ -128,18 +130,18 @@ plotting.view_surf(mesh_sub.inflated, hcp.cortex_data(Xn[29]),
 * the *Yeo et.al.* 7- and 17-region (cortical) functional networks - `hcp.yeo7` and `hcp.yeo17`
 * the standard CIFTI partition into the main subcortical regions - `hcp.standard`
 
-For references and details see below or the [github page](https://github.com/rmldj/hcp-utils). Please cite the relevant papers if you make use of these parcellations. These parcellations were extracted from the relevant `.dlabel.nii` files by the scripts in the `prepare/` folder of the package repository.
+For references and details see below or the [github page](https://github.com/rmldj/hcp-utils). These parcellations were extracted from the relevant `.dlabel.nii` files by the scripts in the `prepare/` folder of the package repository. Please cite the relevant papers if you make use of these parcellations. 
 
-All the labels and the corresponding numerical ids for these parcellations are shown on the [parcellation labels](./parcellation_labels.html) page.
+All the labels and the corresponding numerical ids for these parcellations are displayed on the [parcellation labels](./parcellation_labels.html) page.
 
 The data for a parcellation contained e.g. in `hcp.mmp` has the following fields:
 * `parcellation.ids` - numerical ids of the parcels. 0 means unassigned.
 * `parcellation.nontrivial_ids` - same but with the unassigned one omitted.
-* `parcellation.labels` - a dictionary which maps numerical id to the name of the region
+* `parcellation.labels` - a dictionary which maps the numerical id to the name of the region
 * `parcellation.map_all` - an integer array of size 91282, giving the id of each grayordinate
-* `parcellation.rgba` - a dictionary which maps numerical id to the rgba color (extracted from the source files)
+* `parcellation.rgba` - a dictionary which maps the numerical id to the rgba color (extracted from the source files)
 
-One can view a cortical parcellation on the 3D surface plot:
+One can view a cortical parcellation on the 3D surface plot using the following function
 
 ```
 hcp.view_parcellation(mesh_sub.inflated, hcp.yeo7)
@@ -172,7 +174,7 @@ hcp.parcellation_labels(yeo7lr)
 ![yeo-7 lr parcellation labels](images/out3b.png)
 
 
-The main point of a parcellation is to obtain the parcellated time series (by taking the mean over each parcel) for further analysis. This can be done through
+The main use of a parcellation is to obtain the parcellated time series (by taking the mean over each parcel) for further analysis. This can be done through
 
 ```
 Xp = hcp.parcellate(Xn, hcp.yeo7)
@@ -218,7 +220,9 @@ The above function returns a `Pandas` data frame which of course can be used for
 
 Once some computation on the cortex data has been done and some boolean condition determined, it may be useful to decompose the region where the condition is satisfied into connected components.
 
-`cortical_adjacency` is the 59412x59412 (sparse) adjacency matrix of the grayordinates on both hemispheres of the cortex. The decomposition of the region where the boolean condition is satisfied into connected components is done by the function `cortical_components(condition, cutoff=0)` which returns the number of components, their sizes in descending order and an integer array with the labels of each grayordinate (0 means unassigned, labels ordered according to decreasing size of the connected components).
+`cortical_adjacency` is the 59412x59412 (sparse) adjacency matrix of the grayordinates on both hemispheres of the cortex. 
+
+The decomposition of the region where the boolean condition is satisfied into connected components is done by the function `cortical_components(condition, cutoff=0)` which returns the number of components, their sizes in descending order and an integer array with the labels of each grayordinate (0 means unassigned, labels ordered according to decreasing size of the connected components).
 If the cutoff parameter is specified, components smaller than the cutoff are neglected and the corresponding labels set to zero.
 
 E.g. if we would insert a condition which is always true
@@ -228,7 +232,7 @@ n_components, sizes
 ```
 > (2, array([29716, 29696]))
 
-we would get just the two hemispheres as the connected components.
+we would get just the two cortical hemispheres as the connected components.
 
 A more realistic example would be
 ```
@@ -264,7 +268,7 @@ These group average files are redistributed under the [HCP Open Access Data Use 
 
 ### Parcellations
 
-When using the included parcellations, please cite the relevant papers.
+When using the included parcellations, please cite the relevant papers, which include full details.
 
 **The Glasser MMP1.0 Parcellation:** Glasser, Matthew F., Timothy S. Coalson, Emma C. Robinson, Carl D. Hacker, John Harwell, Essa Yacoub, Kamil Ugurbil, et al. 2016. “A Multi-Modal Parcellation of Human Cerebral Cortex.” Nature 536 (7615): 171–78.  [http://doi.org/10.1038/nature18933](http://doi.org/10.1038/nature18933) (see in particular the details in *Supplementary	Neuroanatomical	Results*).
 
