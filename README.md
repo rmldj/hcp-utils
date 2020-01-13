@@ -58,6 +58,6 @@ When using the included parcellations, please cite the relevant papers.
 
 * * *
 
-*This package was initiated as a tool within the project ["Bio-inspired artificial neural networks"](http://bionn.matinf.uj.edu.pl/) funded by the Foundation for Polish Science (FNP)* 
+*This package was initiated as a tool within the project ["Bio-inspired artificial neural networks"](http://bionn.matinf.uj.edu.pl/) funded by the Foundation for Polish Science (FNP).* 
 
 
