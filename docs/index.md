@@ -217,6 +217,7 @@ The above function returns a `Pandas` data frame which of course can be used for
 ## Connected components
 
 Once some computation on the cortex data has been done and some boolean condition determined, it may be useful to decompose the region where the condition is satisfied into connected components.
+
 `cortical_adjacency` is the 59412x59412 (sparse) adjacency matrix of the grayordinates on both hemispheres of the cortex. The decomposition of the region where the boolean condition is satisfied into connected components is done by the function `cortical_components(condition, cutoff=0)` which returns the number of components, their sizes in descending order and an integer array with the labels of each grayordinate (0 means unassigned, labels ordered according to decreasing size of the connected components).
 If the cutoff parameter is specified, components smaller than the cutoff are neglected and the corresponding labels set to zero.
 
