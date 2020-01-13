@@ -16,13 +16,13 @@ The utilities mainly deal with plotting surface data, accessing the predefined s
 
 # Installation
 
-Make sure that you have the following packages installed
+Make sure that you have the following packages installed (e.g. using [miniconda](https://docs.conda.io/en/latest/miniconda.html))
 ```
 nibabel, nilearn, numpy, scikit-learn, matplotlib, pandas, scipy
 ```
 Then install with 
 ```
-pip install hcp_utils   # TO BE IMPLEMENTED
+pip install hcp_utils
 ```
 upgrade with
 ```

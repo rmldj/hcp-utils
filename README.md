@@ -1,4 +1,4 @@
-# hcp-utils (WORK IN PROGRESS)
+# hcp-utils
 
 This package contains utilities to use  [Human Connectome Project](https://www.humanconnectome.org/) (HCP) data and HCP-like data (e.g. obtained from legacy data using [ciftify](https://github.com/edickie/ciftify)) as well as corresponding parcellations with [nilearn](https://nilearn.github.io/) and other Python tools. 
 
@@ -19,13 +19,13 @@ Find the documentation at [rmldj.github.io/hcp-utils](https://rmldj.github.io/hc
 
 ## Installation
 
-Make sure that you have the following packages installed
+Make sure that you have the following packages installed (e.g. using [miniconda](https://docs.conda.io/en/latest/miniconda.html))
 ```
 nibabel, nilearn, numpy, scikit-learn, matplotlib, pandas, scipy
 ```
 Then install with 
 ```
-pip install hcp_utils   # TO BE IMPLEMENTED
+pip install hcp_utils
 ```
 upgrade with
 ```
