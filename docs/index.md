@@ -216,9 +216,9 @@ The above function returns a `Pandas` data frame which of course can be used for
 
 ## Connected components
 
-Once some computation of the cortex data has been done and some boolean condition determined, it may be useful to decompose the region where the condition is satisfied into connected components.
-`cortical_adjacency` is the 59412x59412 (sparse) adjacency matrix of the grayordinates on both hemispheres of the cortex. The decomposition of the region where the boolean condition is satisfied into connected components is done by the function `cortical_components(condition, cutoff=0)` which returns the number of components, their sizes in descending order and an integer array with the labels (0 unassigned, labels ordered according to decreasing size).
-If the cutoff parameter is sepcified, components smaller than the cutoff are set to zero.
+Once some computation on the cortex data has been done and some boolean condition determined, it may be useful to decompose the region where the condition is satisfied into connected components.
+`cortical_adjacency` is the 59412x59412 (sparse) adjacency matrix of the grayordinates on both hemispheres of the cortex. The decomposition of the region where the boolean condition is satisfied into connected components is done by the function `cortical_components(condition, cutoff=0)` which returns the number of components, their sizes in descending order and an integer array with the labels of each grayordinate (0 means unassigned, labels ordered according to decreasing size of the connected components).
+If the cutoff parameter is specified, components smaller than the cutoff are neglected and the corresponding labels set to zero.
 
 E.g. if we would insert a condition which is always true
 ```
@@ -228,6 +228,7 @@ n_components, sizes
 > (2, array([29716, 29696]))
 
 we would get just the two hemispheres as the connected components.
+
 A more realistic example would be
 ```
 n_components, sizes, rois = hcp.cortical_components(Xn[29]>1.0, cutoff=36)
@@ -245,6 +246,7 @@ plotting.view_surf(hcp.mesh.inflated,
     threshold=1.0, bg_map=hcp.mesh.sulc)
 ```
 
+![connected component](images/out8.png)
 
 
 ## External data and references
