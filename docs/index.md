@@ -18,7 +18,7 @@ The utilities mainly deal with plotting surface data, accessing the predefined s
 
 Make sure that you have the following packages installed
 ```
-nibabel, nilearn, numpy, scikit-learn, matplotlib, pandas
+nibabel, nilearn, numpy, scikit-learn, matplotlib, pandas, scipy
 ```
 Then install with 
 ```
@@ -214,8 +214,36 @@ df
 
 The above function returns a `Pandas` data frame which of course can be used for further analysis.
 
+## Connected components
 
+Once some computation of the cortex data has been done and some boolean condition determined, it may be useful to decompose the region where the condition is satisfied into connected components.
+`cortical_adjacency` is the 59412x59412 (sparse) adjacency matrix of the grayordinates on both hemispheres of the cortex. The decomposition of the region where the boolean condition is satisfied into connected components is done by the function `cortical_components(condition, cutoff=0)` which returns the number of components, their sizes in descending order and an integer array with the labels (0 unassigned, labels ordered according to decreasing size).
+If the cutoff parameter is sepcified, components smaller than the cutoff are set to zero.
 
+E.g. if we would insert a condition which is always true
+```
+n_components, sizes, rois = hcp.cortical_components(Xn[29]>-1000.0)
+n_components, sizes
+```
+> (2, array([29716, 29696]))
+
+we would get just the two hemispheres as the connected components.
+A more realistic example would be
+```
+n_components, sizes, rois = hcp.cortical_components(Xn[29]>1.0, cutoff=36)
+n_components, sizes
+```
+> (42, array([1227,  415,  296,  276,  201,  168,  165,  143,  141,  115,  103,
+         101,   79,   77,   74,   69,   63,   62,   60,   52,   51,   51,
+          49,   48,   48,   45,   44,   43,   43,   43,   42,   40,   40,
+          39,   38,   38,   38,   38,   37,   37,   37,   36]))
+
+Then the largest connected component of size 1227 could be displayed by
+```
+plotting.view_surf(hcp.mesh.inflated, 
+    hcp.cortex_data(hcp.mask(Xn[29], rois==1)), 
+    threshold=1.0, bg_map=hcp.mesh.sulc)
+```
 
 
 

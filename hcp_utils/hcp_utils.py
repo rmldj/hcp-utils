@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
 import pandas as pd
+from scipy.sparse import load_npz
+from scipy.sparse.csgraph import connected_components
 import os
 import re
 from pathlib import Path
@@ -452,3 +454,40 @@ def normalize(X):
     Normalizes data so that each grayordinate has zero (temporal) mean and unit standard deviation.
     """
     return (X - np.mean(X,axis=0))/np.std(X,axis=0)
+
+
+# cortical adjacency matrix
+
+cortical_adjacency = load_npz(PKGDATA / 'cortical_adjacency.npz')
+
+def cortical_components(condition, cutoff=0):
+    """
+    Decomposes boolean array condition into connected components on the cortex.
+    Returns `n_components`, `sizes` and an integer array `rois` with corresponding labels.
+    0 means unassigned.
+    """
+
+    condition_cortex = condition[struct.cortex]
+    rois = np.zeros(len(condition), dtype=int)
+    G = cortical_adjacency[condition_cortex, :][:, condition_cortex]
+    n_components, labels = connected_components(G)
+    _, counts = np.unique(labels, return_counts=True)
+
+    perm = np.argsort(counts)[::-1]
+    invperm = np.argsort(perm)
+    labels = invperm[labels] + 1
+    rois[struct.cortex][condition_cortex] = labels
+    sizes = counts[perm]
+
+    if cutoff>0:
+        maxc_arr = np.where(sizes<cutoff)[0]
+        if len(maxc_arr)>0:
+            maxc = maxc_arr[0]
+            n_components = maxc
+            sizes = sizes[:maxc]
+            rois[rois>maxc] = 0
+
+    return n_components, sizes, rois
+
+
+
