@@ -56,3 +56,8 @@ When using the included parcellations, please cite the relevant papers.
 **The Cole-Anticevic Brain-wide Network Partition:** Ji JL*, Spronk M*, Kulkarni K, Repovs G, Anticevic A**, Cole MW** (2019). "Mapping the human brain's cortical-subcortical functional network organization". NeuroImage. 185:35–57. doi:10.1016/j.neuroimage.2018.10.006 [* = equal contribution; ** = senior authors] https://doi.org/10.1016/j.neuroimage.2018.10.006 (also available as an open access bioRxiv preprint: http://doi.org/10.1101/206292) and https://github.com/ColeLab/ColeAnticevicNetPartition/
 
 
+* * *
+
+*This package was initiated as a tool within the project ["Bio-inspired artificial neural networks"](http://bionn.matinf.uj.edu.pl/) funded by the Foundation for Polish Science (FNP)* 
+
+

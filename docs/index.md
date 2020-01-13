@@ -34,7 +34,7 @@ pip install --upgrade hcp_utils
 
 Here we assume that the commands will be run in a Jupyter notebook as this allows for rotating and scaling the 3D plots with your mouse.
 
-### Getting started
+## Getting started
 
 First import prerequisities.
 ```
@@ -51,7 +51,7 @@ import hcp_utils as hcp
 
 We use `nibabel` to load a CIFTI file with the fMRI time series. We also extract the fMRI time series to a `numpy` array.
 ```
-img = nib.load('PATH/TO/fMRI_data_file.dtseries.nii')
+img = nib.load('path/to/fMRI_data_file.dtseries.nii')
 X = img.get_fdata()
 X.shape     # e.g. (700, 91282)
 ```
@@ -76,7 +76,7 @@ For convenience we add a function which normalized the data so that each grayord
 Xn = hcp.normalize(X)
 ```
 
-### Plotting
+## Plotting
 
 In order to plot the cortical surface data for the whole bran, one has to have the surface meshes appropriate for HCP data and combine the ones corresponding to the left and right hemispheres into a single mesh. 
 In addition, the HCP fMRI data are defined on a *subset* of the surface vertices (29696 out of 32492 for the left cortex and 29716 out of 32492 for the right cortex). Hence we have to construct an auxilliary array of size 32492 or 64984 with the fMRI data points inserted in appropriate places and a constant (zero by default) elsewhere. This is achieved by the `cortex_data(arr, fill=0)`, `left_cortex_data(arr, fill=0)` and `right_cortex_data(arr, fill=0)` functions.
@@ -117,7 +117,7 @@ plotting.view_surf(mesh_sub.inflated, hcp.cortex_data(Xn[29]),
 
 ![brain image](images/out2.png)
 
-### Parcellations
+## Parcellations
 
 `hcp_utils` comes with a couple of parcellations preloaded. In particular we have the following ones (with the name of the variable with the parcellation data)
 
@@ -218,6 +218,34 @@ The above function returns a `Pandas` data frame which of course can be used for
 
 
 
+
+## External data and references
+
+### Surface meshes
+
+The default surface meshes for 3D visualization come from the group average of the Human Connectome Project (HCP) 1200 Subjects (S1200) data release (March 2017) processed using HCP pipelines. They can be obtained on BALSA: https://balsa.wustl.edu/reference/show/pkXDZ 
+
+
+These group average files are redistributed under the HCP Open Access Data Use Terms https://www.humanconnectome.org/study/hcp-young-adult/document/wu-minn-hcp-consortium-open-access-data-use-terms with the acknowledgment: 
+
+*"Data were provided [in part] by the Human Connectome Project, WU-Minn Consortium (Principal Investigators: David Van Essen and Kamil Ugurbil; 1U54MH091657) funded by the 16 NIH Institutes and Centers that support the NIH Blueprint for Neuroscience Research; and by the McDonnell Center for Systems Neuroscience at Washington University."*
+
+
+### Parcellations
+
+When using the included parcellations, please cite the relevant papers.
+
+**The Glasser MMP1.0 Parcellation:** Glasser, Matthew F., Timothy S. Coalson, Emma C. Robinson, Carl D. Hacker, John Harwell, Essa Yacoub, Kamil Ugurbil, et al. 2016. “A Multi-Modal Parcellation of Human Cerebral Cortex.” Nature 536 (7615): 171–78.  http://doi.org/10.1038/nature18933 (see in particular the details in *Supplementary	Neuroanatomical	Results*).
+
+**Yeo 7 or (17) Network Parcellation:** Yeo, B. T. Thomas, Fenna M. Krienen, Jorge Sepulcre, Mert R. Sabuncu, Danial Lashkari, Marisa Hollinshead, Joshua L. Roffman, et al. 2011. “The Organization of the Human Cerebral Cortex Estimated by Intrinsic Functional Connectivity.” Journal of Neurophysiology 106 (3): 1125–65. https://doi.org/10.1152/jn.00338.2011.
+
+**The Cole-Anticevic Brain-wide Network Partition:** Ji JL*, Spronk M*, Kulkarni K, Repovs G, Anticevic A**, Cole MW** (2019). "Mapping the human brain's cortical-subcortical functional network organization". NeuroImage. 185:35–57. doi:10.1016/j.neuroimage.2018.10.006 [* = equal contribution; ** = senior authors] https://doi.org/10.1016/j.neuroimage.2018.10.006 (also available as an open access bioRxiv preprint: http://doi.org/10.1101/206292) and https://github.com/ColeLab/ColeAnticevicNetPartition/
+
+
+
+* * *
+
+*This package was initiated as a tool within the project ["Bio-inspired artificial neural networks"](http://bionn.matinf.uj.edu.pl/) funded by the Foundation for Polish Science (FNP)* 
 
 
 
