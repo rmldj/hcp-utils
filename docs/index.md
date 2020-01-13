@@ -137,7 +137,7 @@ The data for a parcellation contained e.g. in `hcp.mmp` has the following fields
 * `parcellation.nontrivial_ids` - same but with the unassigned one omitted.
 * `parcellation.labels` - a dictionary which maps numerical id to the name of the region
 * `parcellation.map_all` - an integer array of size 91282, giving the id of each grayordinate
-* `parcellation.rgba` - rgba color (extracted from the source files)
+* `parcellation.rgba` - a dictionary which maps numerical id to the rgba color (extracted from the source files)
 
 One can view a cortical parcellation on the 3D surface plot:
 
@@ -154,6 +154,23 @@ hcp.parcellation_labels(hcp.yeo7)
 ```
 
 ![yeo-7 parcellation labels](images/out4.png)
+
+
+Sometimes it may be convenient to differentiate between the networks in the left and right hemispheres. For that one can use the function `make_lr_parcellation(parcellation)` which takes a parcellation and separates the parcels in the left and right hemisphere. The subcortical part is set to zero (unassigned).
+
+```
+yeo7lr = hcp.make_lr_parcellation(hcp.yeo7)
+hcp.view_parcellation(mesh_sub.inflated, yeo7lr)
+```
+
+![yeo-7 lr parcellation image](images/out3a.png)
+
+```
+hcp.parcellation_labels(yeo7lr)
+```
+
+![yeo-7 lr parcellation labels](images/out3b.png)
+
 
 The main point of a parcellation is to obtain the parcellated time series (by taking the mean over each parcel) for further analysis. This can be done through
 

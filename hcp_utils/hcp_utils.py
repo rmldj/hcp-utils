@@ -225,14 +225,17 @@ def _load_hcp_parcellation(variant=None):
     parcellation = Bunch()
     parcellation.ids = parcnpz['ids']
     parcellation.map_all = parcnpz['map_all']
-    parcellation.rgba = parcnpz['rgba']
 
     labels = parcnpz['labels']
     labelsdict = dict()
+    rgba = parcnpz['rgba']
+    rgbadict = dict()
     for i, k in enumerate(parcellation.ids):
-        labelsdict[k] = labels[i] 
+        labelsdict[k] = labels[i]
+        rgbadict[k] = rgba[i]
 
     parcellation.labels = labelsdict
+    parcellation.rgba = rgbadict
 
     i = 0
     nontrivial_ids = []
@@ -257,8 +260,18 @@ def view_parcellation(meshLR, parcellation):
     """
     View the given parcellation on an a whole brain surface mesh.
     """
-    cmap = matplotlib.colors.ListedColormap(parcellation.rgba)
-    return plotting.view_surf(meshLR, cortex_data(parcellation.map_all), symmetric_cmap=False, cmap=cmap)
+    # for some parcellations the numerical ids need not be consecutive
+    cortex_map = cortex_data(parcellation.map_all)
+    ids = np.unique(cortex_map)
+    normalized_cortex_map = np.zeros_like(cortex_map)
+    rgba = np.zeros((len(ids), 4))
+    for i in range(len(ids)):
+        ind = cortex_map==ids[i]
+        normalized_cortex_map[ind] = i
+        rgba[i,:] = parcellation.rgba[ids[i]]
+
+    cmap = matplotlib.colors.ListedColormap(rgba)
+    return plotting.view_surf(meshLR, normalized_cortex_map, symmetric_cmap=False, cmap=cmap)
 
 def parcellation_labels(parcellation):
     """
@@ -281,11 +294,12 @@ def parcellation_labels(parcellation):
     w = X/ncols
 
     for i in range(n):
-        label = parcellation.labels[parcellation.ids[i]]
+        k = parcellation.ids[i]
+        label = parcellation.labels[k]
         if label == '':
             label = 'None'
         
-        name = '{} ({})'.format(label, parcellation.ids[i])
+        name = '{} ({})'.format(label, k)
 
         col = i // nrows
         row = i % nrows
@@ -297,7 +311,7 @@ def parcellation_labels(parcellation):
 
         ax.text(xt, y + h/2 , name, fontsize=h, horizontalalignment='left', verticalalignment='center')
 
-        ax.add_patch(mpatches.Rectangle((xi, y), xf-xi, h ,linewidth=1,edgecolor='k',facecolor=parcellation.rgba[i]))
+        ax.add_patch(mpatches.Rectangle((xi, y), xf-xi, h ,linewidth=1,edgecolor='k',facecolor=parcellation.rgba[k]))
     
     ax.set_xlim(0, X)
     ax.set_ylim(0, Y)
@@ -374,6 +388,62 @@ def ranking(Xp, parcellation, descending=True):
         ids.append(k)
     return pd.DataFrame({'region':labels, 'id':ids, 'data':Xp[ind]})
 
+
+def make_lr_parcellation(parcellation):
+    """
+    Takes the given parcellation and produces a new one where parcels in the left and right hemisphere are made to be distinct.
+    Subcortical voxels are set to 0 (unassigned).
+    """
+    map_all = np.zeros_like(parcellation.map_all)
+    left = parcellation.map_all[struct.cortex_left]
+    right = parcellation.map_all[struct.cortex_right]
+    left_ids = np.unique(left)
+    right_ids = np.unique(right)
+    if left_ids[0]==0:
+        left_ids = left_ids[1:]
+    if right_ids[0]==0:
+        right_ids = right_ids[1:]
+
+    n_left_ids = len(left_ids)
+    n_right_ids = len(right_ids)
+    new_left_ids = np.arange(n_left_ids) + 1
+    new_right_ids = np.arange(n_right_ids) + new_left_ids[-1] + 1
+
+    labels = dict()
+    labels[0] = ''
+    ids = [0]
+    nontrivial_ids = []
+    rgba = dict()
+    rgba[0] = np.array([1.0,1.0,1.0,1.0])
+
+    for i in range(n_left_ids):
+        old_id = left_ids[i]
+        new_id = new_left_ids[i]
+        map_all[struct.cortex_left][left==old_id] = new_id
+        labels[new_id] = parcellation.labels[old_id] + ' L'
+        ids.append(new_id)
+        nontrivial_ids.append(new_id)
+        color = parcellation.rgba[old_id].copy()
+        color[:3] = color[:3] * 0.7
+        rgba[new_id] = color
+
+    for i in range(n_right_ids):
+        old_id = right_ids[i]
+        new_id = new_right_ids[i]
+        map_all[struct.cortex_right][right==old_id] = new_id
+        labels[new_id] = parcellation.labels[old_id] + ' R'
+        ids.append(new_id)
+        nontrivial_ids.append(new_id)
+        rgba[new_id] = parcellation.rgba[old_id]
+
+    new_parcellation = Bunch()
+    new_parcellation.map_all = map_all
+    new_parcellation.labels = labels
+    new_parcellation.ids = ids
+    new_parcellation.nontrivial_ids = nontrivial_ids
+    new_parcellation.rgba = rgba
+
+    return new_parcellation
 
 # Other utilities
 
