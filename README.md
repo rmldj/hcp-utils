@@ -49,11 +49,11 @@ These group average files are redistributed under the HCP Open Access Data Use T
 
 When using the included parcellations, please cite the relevant papers, which include full details.
 
-**The Glasser MMP1.0 Parcellation:** Glasser, Matthew F., Timothy S. Coalson, Emma C. Robinson, Carl D. Hacker, John Harwell, Essa Yacoub, Kamil Ugurbil, et al. 2016. “A Multi-Modal Parcellation of Human Cerebral Cortex.” Nature 536 (7615): 171–78.  http://doi.org/10.1038/nature18933 (see in particular the details in *Supplementary	Neuroanatomical	Results*).
+**The Glasser MMP1.0 Parcellation:** Glasser, Matthew F., Timothy S. Coalson, Emma C. Robinson, Carl D. Hacker, John Harwell, Essa Yacoub, Kamil Ugurbil, et al. 2016. “A Multi-Modal Parcellation of Human Cerebral Cortex.” Nature 536 (7615): 171–78.  [http://doi.org/10.1038/nature18933](http://doi.org/10.1038/nature18933) (see in particular the details in *Supplementary Neuroanatomical Results*).
 
-**Yeo 7 or (17) Network Parcellation:** Yeo, B. T. Thomas, Fenna M. Krienen, Jorge Sepulcre, Mert R. Sabuncu, Danial Lashkari, Marisa Hollinshead, Joshua L. Roffman, et al. 2011. “The Organization of the Human Cerebral Cortex Estimated by Intrinsic Functional Connectivity.” Journal of Neurophysiology 106 (3): 1125–65. https://doi.org/10.1152/jn.00338.2011.
+**Yeo 7 or (17) Network Parcellation:** Yeo, B. T. Thomas, Fenna M. Krienen, Jorge Sepulcre, Mert R. Sabuncu, Danial Lashkari, Marisa Hollinshead, Joshua L. Roffman, et al. 2011. “The Organization of the Human Cerebral Cortex Estimated by Intrinsic Functional Connectivity.” Journal of Neurophysiology 106 (3): 1125–65. [https://doi.org/10.1152/jn.00338.2011](https://doi.org/10.1152/jn.00338.2011).
 
-**The Cole-Anticevic Brain-wide Network Partition:** Ji JL*, Spronk M*, Kulkarni K, Repovs G, Anticevic A**, Cole MW** (2019). "Mapping the human brain's cortical-subcortical functional network organization". NeuroImage. 185:35–57. doi:10.1016/j.neuroimage.2018.10.006 [* = equal contribution; ** = senior authors] https://doi.org/10.1016/j.neuroimage.2018.10.006 (also available as an open access bioRxiv preprint: http://doi.org/10.1101/206292) and https://github.com/ColeLab/ColeAnticevicNetPartition/
+**The Cole-Anticevic Brain-wide Network Partition:** Ji JL*, Spronk M*, Kulkarni K, Repovs G, Anticevic A**, Cole MW** (2019). "Mapping the human brain's cortical-subcortical functional network organization". NeuroImage. 185:35–57. [https://doi.org/10.1016/j.neuroimage.2018.10.006](https://doi.org/10.1016/j.neuroimage.2018.10.006) (also available as an open access bioRxiv preprint: [http://doi.org/10.1101/206292](http://doi.org/10.1101/206292)) and [https://github.com/ColeLab/ColeAnticevicNetPartition/](https://github.com/ColeLab/ColeAnticevicNetPartition/)
 
 
 * * *
