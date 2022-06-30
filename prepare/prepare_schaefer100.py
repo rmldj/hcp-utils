@@ -11,7 +11,7 @@ rois = dlab.get_fdata().astype(int)
 # for i in range(4):
 #     print(i, np.unique(rois[i]))
 
-vertex_data = np.load('../hcp-utils/data/fMRI_vertex_info_32k.npz')
+vertex_data = np.load('../hcp_utils/data/fMRI_vertex_info_32k.npz')
 grayl = vertex_data['grayl']
 grayr = vertex_data['grayr']
 
@@ -26,11 +26,11 @@ sch100lv=rois[0,:32492]
 sch100rv=rois[0,32492:]
 
 sch100 = np.zeros(91282, dtype=int)
-sch100l = sch100l[cortex_left_]
-sch100r = sch100r[cortex_right_]
+sch100l = sch100[cortex_left_]
+sch100r = sch100[cortex_right_]
 
 sch100l[:] = sch100lv[grayl]
-sch100r[:] = sch1007rv[grayr]
+sch100r[:] = sch100rv[grayr]
 
 #print(np.unique(yeo7l))
 #print(np.unique(yeo7r))
@@ -52,7 +52,7 @@ for v in mapsch100:
 
 labels = ['', 'Visual', 'Somatomotor', 'Dorsal Attention', 'Ventral Attention', 'Limbic', 'Frontoparietal', 'Default']
 
-axis0=rois.header.get_index_map(0)
+axis0=dlab.header.get_index_map(0)
 nmap=list(axis0.named_maps)[0]
 
 rgba = [(1.0,1.0,1.0,1.0)]
@@ -68,7 +68,7 @@ keys = np.arange(8)
 #print(labels)
 #print(rgba)
 
-np.savez_compressed('../hcp-utils/data/sch100.npz', map_all=sch100, labels=labels, rgba=rgba, ids=keys)
+np.savez_compressed('../hcp_utils/data/sch100.npz', map_all=sch100, labels=labels, rgba=rgba, ids=keys)
 
 
 """
