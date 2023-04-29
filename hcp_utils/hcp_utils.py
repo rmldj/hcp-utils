@@ -205,24 +205,25 @@ mesh = load_surfaces()
 
 # parcellations
 
-def _load_hcp_parcellation(variant=None):
-    allowed = ['mmp', 'ca_network', 'ca_parcels', 'yeo7', 'yeo17', 'standard']
+def load_hcp_parcellation(variant=None, resolution=None):
+    allowed = ['mmp', 'ca_network', 'ca_parcels', 'yeo7', 'yeo17', 'yan_kong17', 'standard']
     if variant not in allowed:
         print('argument should be one of ' + ','.join(allowed))
         return
-    
-    if variant=='standard':
+    elif variant=='standard':
         parcnpz = np.load(PKGDATA / 'standard.npz')
-    if variant=='mmp':
+    elif variant=='mmp':
         parcnpz = np.load(PKGDATA / 'mmp_1.0.npz')
-    if variant=='ca_network':
+    elif variant=='ca_network':
         parcnpz = np.load(PKGDATA / 'ca_network_1.1.npz')
-    if variant=='ca_parcels':
+    elif variant=='ca_parcels':
         parcnpz = np.load(PKGDATA / 'ca_parcels_1.1.npz')
-    if variant=='yeo7':
+    elif variant=='yeo7':
         parcnpz = np.load(PKGDATA / 'yeo7.npz')
-    if variant=='yeo17':
+    elif variant=='yeo17':
         parcnpz = np.load(PKGDATA / 'yeo17.npz')
+    elif variant=='yan_kong17':
+        parcnpz = np.load(PKGDATA / f'yan_kong17_{resolution}parcels.npz')
     
     parcellation = Bunch()
     parcellation.ids = parcnpz['ids']
@@ -249,14 +250,6 @@ def _load_hcp_parcellation(variant=None):
 
     return parcellation
 
-# predefined parcellations
-
-mmp = _load_hcp_parcellation('mmp')
-ca_network = _load_hcp_parcellation('ca_network')
-ca_parcels = _load_hcp_parcellation('ca_parcels')
-yeo7 = _load_hcp_parcellation('yeo7')
-yeo17 = _load_hcp_parcellation('yeo17')
-standard = _load_hcp_parcellation('standard')
 
 def view_parcellation(meshLR, parcellation):
     """
